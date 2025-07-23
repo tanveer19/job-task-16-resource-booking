@@ -1,62 +1,60 @@
-import { bookings } from "@/lib/bookings";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: Request) {
-  const { resource, startTime, endTime, requestedBy } = await req.json();
+  const body = await req.json();
+  const { resource, startTime, endTime, requestedBy } = body;
 
   const start = new Date(startTime);
   const end = new Date(endTime);
 
-  if (end <= start) {
-    return new NextResponse("End time must be after start time.", {
-      status: 400,
-    });
-  }
+  const bufferMinutes = 10;
 
-  const duration = (end.getTime() - start.getTime()) / (1000 * 60); // in minutes
-  if (duration < 15) {
-    return new NextResponse("Minimum duration is 15 minutes.", { status: 400 });
-  }
+  const bufferStart = new Date(start.getTime() - bufferMinutes * 60000);
+  const bufferEnd = new Date(end.getTime() + bufferMinutes * 60000);
 
-  const bufferMs = 10 * 60 * 1000;
-
-  const hasConflict = bookings.some((b) => {
-    if (b.resource !== resource) return false;
-
-    const existingStart = new Date(b.startTime).getTime() - bufferMs;
-    const existingEnd = new Date(b.endTime).getTime() + bufferMs;
-
-    return start.getTime() < existingEnd && end.getTime() > existingStart;
+  const conflict = await prisma.booking.findFirst({
+    where: {
+      resource,
+      OR: [
+        {
+          startTime: { lte: bufferEnd },
+          endTime: { gte: bufferStart },
+        },
+      ],
+    },
   });
 
-  if (hasConflict) {
-    return new NextResponse(
-      "Booking overlaps with existing booking or buffer time.",
-      { status: 409 }
-    );
+  if (conflict) {
+    return new NextResponse("Booking conflict", { status: 409 });
   }
 
-  bookings.push({ id: uuidv4(), resource, startTime, endTime, requestedBy });
+  const booking = await prisma.booking.create({
+    data: { resource, startTime: start, endTime: end, requestedBy },
+  });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(booking);
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const resource = searchParams.get("resource");
-  const date = searchParams.get("date");
+  const resource = searchParams.get("resource") || undefined;
+  const date = searchParams.get("date") || undefined;
 
-  let filtered = bookings;
-
-  if (resource) {
-    filtered = filtered.filter((b) => b.resource === resource);
-  }
-
+  const where: any = {};
+  if (resource) where.resource = resource;
   if (date) {
-    const targetDate = new Date(date).toISOString().split("T")[0];
-    filtered = filtered.filter((b) => b.startTime.startsWith(targetDate));
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setDate(end.getDate() + 1);
+
+    where.startTime = { gte: start, lt: end };
   }
 
-  return NextResponse.json(filtered);
+  const bookings = await prisma.booking.findMany({
+    where,
+    orderBy: { startTime: "asc" },
+  });
+
+  return NextResponse.json(bookings);
 }
