@@ -35,33 +35,46 @@ export default function Dashboard() {
   }, {} as Record<string, Booking[]>);
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">Booking Dashboard</h1>
-      {Object.entries(grouped).map(([resource, items]) => (
-        <div key={resource} className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">{resource}</h2>
-          <ul className="space-y-2">
-            {items
-              .sort(
-                (a, b) =>
-                  new Date(a.startTime).getTime() -
-                  new Date(b.startTime).getTime()
-              )
-              .map((b) => (
-                <li key={b.id} className="border p-2 rounded">
-                  <div>
-                    <strong>{b.requestedBy}</strong> (
-                    {getStatus(b.startTime, b.endTime)})
-                  </div>
-                  <div>
-                    {new Date(b.startTime).toLocaleString()} →{" "}
-                    {new Date(b.endTime).toLocaleString()}
-                  </div>
-                </li>
-              ))}
-          </ul>
-        </div>
-      ))}
-    </div>
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-12 px-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <h1 className="text-3xl font-bold text-center">Booking Dashboard</h1>
+
+        {Object.entries(grouped).map(([resource, items]) => (
+          <div
+            key={resource}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow p-6"
+          >
+            <h2 className="text-xl font-semibold mb-4 border-b pb-2">
+              {resource}
+            </h2>
+            <ul className="space-y-4">
+              {items
+                .sort(
+                  (a, b) =>
+                    new Date(a.startTime).getTime() -
+                    new Date(b.startTime).getTime()
+                )
+                .map((b) => (
+                  <li
+                    key={b.id}
+                    className="p-4 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700"
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-semibold">{b.requestedBy}</span>
+                      <span className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-600">
+                        {getStatus(b.startTime, b.endTime)}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      {new Date(b.startTime).toLocaleString()} →{" "}
+                      {new Date(b.endTime).toLocaleString()}
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }
