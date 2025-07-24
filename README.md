@@ -4,7 +4,7 @@ A full-stack web application for booking shared resources with conflict detectio
 
 ## 🚀 Live Demo
 
-👉 [Visit the live site](https://job-task-16-resource-booking-ed60sjnuo.vercel.app)
+👉 [Visit the live site](https://job-task-16-resource-booking.onrender.com/)
 
 ---
 
