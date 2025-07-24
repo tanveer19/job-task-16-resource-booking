@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-
+import { Booking } from "@prisma/client";
 export async function POST(req: Request) {
   const body = await req.json();
   const { resource, startTime, endTime, requestedBy } = body;
@@ -41,7 +42,7 @@ export async function GET(req: Request) {
   const resource = searchParams.get("resource") || undefined;
   const date = searchParams.get("date") || undefined;
 
-  const where: any = {};
+  const where: Prisma.BookingWhereInput = {};
   if (resource) where.resource = resource;
   if (date) {
     const start = new Date(date);
