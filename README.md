@@ -1,25 +1,44 @@
-# Resource Booking System
+# 🗓️ Resource Booking System
 
-A mini full-stack app to book resources with conflict and buffer time detection.
+A full-stack web application for booking shared resources with conflict detection, buffer times, calendar view, and persistent storage — built with **Next.js App Router**, **Prisma**, **SQLite**, and **Tailwind CSS**.
 
-## Features
+## 🚀 Live Demo
 
-- Book shared resources with 10-minute buffer logic
-- Prevent overlapping bookings
-- In-memory booking storage
-- Filtered dashboard by resource
-- Tags for Upcoming / Ongoing / Past
+👉 [Visit the live site](https://job-task-16-resource-booking-ed60sjnuo.vercel.app)
 
-## Tech
+---
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- PNPM
+## ✨ Features
 
-## Run Locally
+- 📅 Book any resource with start and end times
+- ⚠️ Conflict detection with buffer time logic
+- 🔐 Protected dashboard view
+- 📊 Weekly calendar of all bookings
+- 🗑️ Delete existing bookings
+- ✅ Form validation and feedback
+- 💾 SQLite + Prisma for persistent storage
+- 🧪 API route handlers using Next.js App Router
+- 🌈 Styled with Tailwind CSS & ShadCN UI
+
+---
+
+## 🧰 Getting Started
+
+### 1. Clone & Install
 
 ```bash
+git clone https://github.com/your-username/resource-booking-system.git
+cd resource-booking-system
 pnpm install
+
+Set Up SQLite Database
+pnpm prisma db push
+
+Start Development Server
 pnpm dev
 ```
+
+Environment Variables
+Create a .env file in the root:
+
+DATABASE_URL="file:./dev.db"
